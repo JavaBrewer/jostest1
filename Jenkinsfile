@@ -1,8 +1,11 @@
 pipeline {
     agent any
+
     environment {
-        GRADLE_USER_HOME = "${workspace}/.gradle"
+        GRADLE_HOME = tool 'Gradle' // Jenkins에 등록된 Gradle 도구 사용
+        PATH = "$GRADLE_HOME/bin:$PATH"
     }
+
     stages {
         stage('Checkout') {
             steps {
@@ -15,7 +18,7 @@ pipeline {
             steps {
                 withSonarQubeEnv('SonarQube_server') {
                     script {
-                        // Gradle 빌드 및 SonarQube 분석 수행
+                        sh 'chmod +x gradlew' // Gradle Wrapper에 실행 권한 추가
                         sh './gradlew clean build sonarqube'
                     }
                 }
