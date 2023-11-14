@@ -1,8 +1,9 @@
 pipeline {
     agent any
-    
+
     environment {
         GRADLE_USER_HOME = "${workspace}/.gradle"
+        DOCKER_IMAGE_TAG = "latest" // 가상의 태그
     }
 
     stages {
@@ -17,9 +18,17 @@ pipeline {
             steps {
                 withSonarQubeEnv('SonarQube_server') {
                     script {
-                        sh 'chmod +x gradlew' // Gradle Wrapper에 실행 권한 추가
+                        sh 'chmod +x gradlew'
                         sh './gradlew clean build sonarqube'
                     }
+                }
+            }
+        }
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    // Docker 이미지 빌드
+                    docker.build("java-brewer/jostest1:${DOCKER_IMAGE_TAG}")
                 }
             }
         }
