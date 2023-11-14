@@ -1,9 +1,8 @@
 pipeline {
     agent any
-
+    
     environment {
-        GRADLE_HOME = tool 'Gradle' // Jenkins에 등록된 Gradle 도구 사용
-        PATH = "$GRADLE_HOME/bin:$PATH"
+        GRADLE_USER_HOME = "${workspace}/.gradle"
     }
 
     stages {
