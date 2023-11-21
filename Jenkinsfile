@@ -26,16 +26,14 @@ pipeline {
         stage('Login') {
             steps {
                 script {
-                    // 'sh'를 통해 노드 내에서 실행
-                    sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+                    sh "echo \${DOCKERHUB_CREDENTIALS_PSW} | docker login -u \${DOCKERHUB_CREDENTIALS_USR} --password-stdin"
                 }
             }
         }
         stage('Push') {
             steps {
                 script {
-                    // 'sh'를 통해 노드 내에서 실행
-                    sh 'docker push $repository:$BUILD_NUMBER'
+                    sh "docker push ${repository}:${BUILD_NUMBER}"
                 }
             }
         }
@@ -43,7 +41,6 @@ pipeline {
     post {
         always {
             script {
-                // 'sh'를 통해 노드 내에서 실행
                 sh 'docker logout'
             }
         }
