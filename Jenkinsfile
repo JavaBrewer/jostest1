@@ -21,6 +21,7 @@ pipeline {
             steps {
                 script {
                     try {
+                        sh 'chmod +x gradlew'
                         sh './gradlew clean build'
                     } catch (Exception e) {
                         currentBuild.result = 'FAILURE'
