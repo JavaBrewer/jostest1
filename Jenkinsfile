@@ -11,7 +11,9 @@ pipeline {
     stages {
         stage('Gradle Build') {
             steps {
-                sh './gradlew clean build'
+                script {
+                    sh './gradlew clean build'
+                }
             }
         }
         stage('Docker Build') {
@@ -23,19 +25,25 @@ pipeline {
         }
         stage('Login') {
             steps {
-                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+                script {
+                    // 'sh'를 통해 노드 내에서 실행
+                    sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+                }
             }
         }
         stage('Push') {
             steps {
-                sh 'docker push $repository:$BUILD_NUMBER'
+                script {
+                    // 'sh'를 통해 노드 내에서 실행
+                    sh 'docker push $repository:$BUILD_NUMBER'
+                }
             }
         }
     }
     post {
         always {
             script {
-                // 'docker logout'를 노드 내에서 실행
+                // 'sh'를 통해 노드 내에서 실행
                 sh 'docker logout'
             }
         }
