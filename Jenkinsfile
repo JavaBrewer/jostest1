@@ -12,14 +12,17 @@ pipeline {
         stage('Gradle Build') {
             steps {
                 script {
-                    sh './gradlew clean build'
+                    // Change to the directory where your gradlew script is located
+                    dir('path/to/your/project') {
+                        sh './gradlew clean build'
+                    }
                 }
             }
         }
         stage('Docker Build') {
             steps {
                 script {
-                    dockerImage = docker.build repository + ":$BUILD_NUMBER"
+                    dockerImage = docker.build("${repository}:${BUILD_NUMBER}")
                 }
             }
         }
