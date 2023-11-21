@@ -10,6 +10,13 @@ pipeline {
         dockerImage = ''
     }
     stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main',
+                    credentialsId: 'github_access_token',
+                    url: 'https://github.com/JavaBrewer/jostest1.git'
+            }
+        }
         stage('Gradle Build') {
             steps {
                 script {
