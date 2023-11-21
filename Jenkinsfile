@@ -20,7 +20,12 @@ pipeline {
         stage('Gradle Build') {
             steps {
                 script {
-                    sh './gradlew clean build'
+                    try {
+                        sh './gradlew clean build'
+                    } catch (Exception e) {
+                        currentBuild.result = 'FAILURE'
+                        error("Gradle build failed: ${e.message}")
+                    }
                 }
             }
         }
