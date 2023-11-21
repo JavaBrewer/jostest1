@@ -1,36 +1,40 @@
 pipeline {
-    agent any
-
-    environment {
-        GRADLE_USER_HOME = "${workspace}/.gradle"
-        DOCKER_IMAGE_TAG = "latest" // 가상의 태그
+  agent any
+  options {
+    buildDiscarder(logRotator(numToKeepStr: '3'))
+  }
+  environment {
+    DOCKERHUB_CREDENTIALS = credentials('dockerhub')
+    repository = "latte04/testjog"
+    dockerImage = ''
+  }
+  stages {
+    stage('Gradle Build') {
+      steps {
+        sh './gradlew clean build'
+      }
     }
-
-    stages {
-        stage('Checkout') {
-            steps {
-                git branch: 'main',
-                    credentialsId: 'github_access_token',
-                    url: 'https://github.com/JavaBrewer/jostest1.git'
-            }
+    stage('Docker Build') {
+      steps {
+        script {
+          dockerImage = docker.build repository + ":$BUILD_NUMBER"
         }
-        stage("Build & SonarQube Analysis") {
-            steps {
-                withSonarQubeEnv('SonarQube_server') {
-                    script {
-                        sh 'chmod +x gradlew'
-                        sh './gradlew clean build sonarqube'
-                    }
-                }
-            }
-        }
-        stage('Build Docker Image') {
-            steps {
-                script {
-                    // Docker 이미지 빌드
-                    docker.build("java-brewer/jostest1:${DOCKER_IMAGE_TAG}")
-                }
-            }
-        }
+      }
     }
+    stage('Login') {
+      steps {
+        sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+      }
+    }
+    stage('Push') {
+      steps {
+        sh 'docker push $repository:$BUILD_NUMBER'
+      }
+    }
+  }
+  post {
+    always {
+      sh 'docker logout'
+    }
+  }
 }
