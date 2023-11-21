@@ -13,7 +13,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 git branch: 'main',
-                    credentialsId: 'github_access_token',
+                    credentialsId: 'jog_text',
                     url: 'https://github.com/JavaBrewer/jostest1.git'
             }
         }
