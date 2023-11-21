@@ -4,6 +4,7 @@ pipeline {
         buildDiscarder(logRotator(numToKeepStr: '3'))
     }
     environment {
+        GRADLE_USER_HOME = "${workspace}/.gradle"
         DOCKERHUB_CREDENTIALS = credentials('dockerhub_id')
         repository = "latte04/testjog"
         dockerImage = ''
@@ -14,6 +15,7 @@ pipeline {
                 script {
                     // Change to the directory where your gradlew script is located
                     dir('path/to/your/project') {
+                        sh 'chmod +x gradlew'
                         sh './gradlew clean build'
                     }
                 }
